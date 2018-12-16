@@ -1,0 +1,10 @@
+logging:
+  level:
+    todoapp: DEBUG
+    org.springframework:
+      boot: INFO
+      web: DEBUG
+
+site:
+  author: 영웅초이
+  description: todo application!
