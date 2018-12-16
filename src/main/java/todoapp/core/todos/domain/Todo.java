@@ -29,11 +29,18 @@ public class Todo {
         return title;
     }
 
-    private void setTitle(String title) {
+    public void setTitle(String title) {
         if(Objects.isNull(title) || title.trim().length() < 4){
             throw new TodoCreationException("title은 4자 이상 작성해야 합니다.");
         }
         this.title = title;
+    }
+
+    public Todo update(String title, boolean completed){
+        this.setTitle(title);
+        this.setState(completed ? TodoState.COMPLETED : TodoState.ACTIVE);
+
+        return this;
     }
 
     public TodoState getState() {

@@ -6,10 +6,11 @@ import todoapp.core.todos.domain.Todo;
 import todoapp.core.todos.domain.TodoRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class TodoManage implements TodoFinder, TodoEditor{
+public class TodoManage implements TodoFinder, TodoEditor {
 
     private TodoRepository todoRepository;
 
@@ -22,7 +23,7 @@ public class TodoManage implements TodoFinder, TodoEditor{
     public List<Todo> getAll() {
 
         return StreamUtils.createStreamFromIterator(todoRepository.findAll().iterator())
-                .collect(Collectors.toList());
+                          .collect(Collectors.toList());
     }
 
     @Override
@@ -35,12 +36,17 @@ public class TodoManage implements TodoFinder, TodoEditor{
     @Override
     public Todo update(Long id, String title, boolean completed) {
 
-        return null;
+        return todoRepository.findById(id)
+                             .map(todo -> todo.update(title, completed))
+                             .orElseThrow(() -> new TodoNotFoundException(id));
     }
 
     @Override
     public Todo delete(Long id) {
 
-        return null;
+        Optional<Todo> todo = todoRepository.findById(id);
+        todo.ifPresent(todoRepository::delete);
+
+        return todo.orElseThrow(() -> new TodoNotFoundException(id));
     }
 }

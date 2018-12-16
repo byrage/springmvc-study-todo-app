@@ -3,6 +3,7 @@ package todoapp.core.todos.infrastructure;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Repository;
+import todoapp.core.todos.application.TodoNotFoundException;
 import todoapp.core.todos.domain.Todo;
 import todoapp.core.todos.domain.TodoRepository;
 
@@ -29,7 +30,8 @@ public class InMemoryTodoRepository implements TodoRepository, ApplicationRunner
     @Override
     public Optional<Todo> findById(Long id) {
 
-        return Optional.empty();
+        return todos.stream().filter(todo -> Objects.equals(id, todo.getId()))
+                    .findFirst();
     }
 
     @Override
@@ -42,10 +44,12 @@ public class InMemoryTodoRepository implements TodoRepository, ApplicationRunner
     @Override
     public void delete(Todo todo) {
 
+        todos.remove(todo);
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+
         this.todos.add(Todo.create("Task 1!!"));
     }
 }

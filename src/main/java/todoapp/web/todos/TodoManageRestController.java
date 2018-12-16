@@ -39,10 +39,26 @@ public class TodoManageRestController {
 
     }
 
+    @PutMapping("/api/todos/{id}")
+    public void update(@PathVariable Long id, @RequestBody @Valid WriteTodoCommand command){
+
+        logger.debug("update: pathVariable:{}, requestBody:{}", id, command);
+        todoEditor.update(id, command.getTitle(), command.getCompleted());
+    }
+
+    @DeleteMapping("/api/todos/{id}")
+    public void delete(@PathVariable Long id){
+
+        logger.debug("delete pathVariable:{}", id);
+        todoEditor.delete(id);
+    }
+
     private static class WriteTodoCommand {
 
         @Size(min = 4, max = 140)
         private String title;
+
+        private Boolean completed;
 
         public String getTitle() {
 
@@ -54,11 +70,22 @@ public class TodoManageRestController {
             this.title = title;
         }
 
+        public Boolean getCompleted() {
+
+            return completed;
+        }
+
+        public void setCompleted(Boolean completed) {
+
+            this.completed = completed;
+        }
+
         @Override
         public String toString() {
 
             return "WriteTodoCommand{" +
                     "title='" + title + '\'' +
+                    ", completed=" + completed +
                     '}';
         }
     }
