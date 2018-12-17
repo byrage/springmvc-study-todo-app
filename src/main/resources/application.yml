@@ -10,4 +10,4 @@ site:
   description: todo application!
   feature:
     auth: true
-    onlineUsersCounter: false
+    onlineUsersCounter: true
