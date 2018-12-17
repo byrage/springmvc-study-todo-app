@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import todoapp.core.todos.application.*;
 import todoapp.core.todos.domain.Todo;
+import todoapp.web.model.FeatureTogglesProperties;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -14,14 +15,16 @@ import java.util.List;
 @RestController
 public class TodoManageRestController {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private TodoFinder todoFinder;
     private TodoEditor todoEditor;
+    private FeatureTogglesProperties featureTogglesProperties;
 
-    public TodoManageRestController(TodoFinder todoFinder, TodoEditor todoEditor) {
+    public TodoManageRestController(TodoFinder todoFinder, TodoEditor todoEditor, FeatureTogglesProperties featureTogglesProperties) {
 
         this.todoFinder = todoFinder;
         this.todoEditor = todoEditor;
+        this.featureTogglesProperties = featureTogglesProperties;
     }
 
     @GetMapping("/api/todos")
@@ -34,7 +37,7 @@ public class TodoManageRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody @Valid WriteTodoCommand command) {
 
-        logger.debug("request body:{}", command);
+        log.debug("request body:{}", command);
         todoEditor.create(command.getTitle());
 
     }
@@ -42,15 +45,22 @@ public class TodoManageRestController {
     @PutMapping("/api/todos/{id}")
     public void update(@PathVariable Long id, @RequestBody @Valid WriteTodoCommand command){
 
-        logger.debug("update: pathVariable:{}, requestBody:{}", id, command);
+        log.debug("update: pathVariable:{}, requestBody:{}", id, command);
         todoEditor.update(id, command.getTitle(), command.getCompleted());
     }
 
     @DeleteMapping("/api/todos/{id}")
     public void delete(@PathVariable Long id){
 
-        logger.debug("delete pathVariable:{}", id);
+        log.debug("delete pathVariable:{}", id);
         todoEditor.delete(id);
+    }
+
+    @GetMapping("/api/feature-toggles")
+    public FeatureTogglesProperties featureToggles() {
+
+        log.debug("featureToggles:{}", featureTogglesProperties);
+        return featureTogglesProperties;
     }
 
     private static class WriteTodoCommand {

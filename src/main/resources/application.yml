@@ -8,3 +8,6 @@ logging:
 site:
   author: 영웅초이
   description: todo application!
+  feature:
+    auth: true
+    onlineUsersCounter: false

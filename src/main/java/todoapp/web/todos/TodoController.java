@@ -14,33 +14,29 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.AbstractView;
 
 import todoapp.commons.domain.Spreadsheet;
 import todoapp.core.todos.application.TodoFinder;
 import todoapp.core.todos.domain.Todo;
+import todoapp.web.model.FeatureTogglesProperties;
 import todoapp.web.model.SiteProperties;
 
 @Controller
 public class TodoController {
 
-    private TodoFinder todoFinder;
-    private SiteProperties siteProperties;
-    public TodoController(TodoFinder todoFinder, SiteProperties siteProperties) {
-        this.todoFinder = todoFinder;
-        this.siteProperties = siteProperties;
-    }
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @ModelAttribute("site")
-    public SiteProperties getSiteProperties() {
-        return siteProperties;
+    private TodoFinder todoFinder;
+
+    public TodoController(TodoFinder todoFinder) {
+
+        this.todoFinder = todoFinder;
     }
 
     // viewName: todos
     // classpath:/tem../todos.html
-
     @RequestMapping("/todos")
     public void todos() {
 
