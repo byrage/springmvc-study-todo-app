@@ -8,8 +8,11 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 import todoapp.core.user.application.UserJoinder;
 import todoapp.core.user.application.UserPasswordVerifier;
+import todoapp.core.user.domain.User;
 import todoapp.core.user.domain.UserEntityNotFoundException;
+import todoapp.security.UserSession;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
@@ -34,7 +37,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid LoginCommand loginCommand) {
+    public String login(@Valid LoginCommand loginCommand, HttpSession session) {
 
         log.debug("loginCommand={}, bindingResult={}", loginCommand);
 
@@ -49,19 +52,26 @@ public class LoginController {
         }
         */
 
+        // TODO : 서버가 두대 이상이라면 세션을 어떻게 다뤄야 할지??
         try {
-            userPasswordVerifier.verify(loginCommand.getUsername(), loginCommand.getPassword());
+            session.setAttribute(User.class.toString(),
+                                 userPasswordVerifier.verify(loginCommand.getUsername(), loginCommand.getPassword()));
         } catch (UserEntityNotFoundException notFoundException) {
-            userJoinder.join(loginCommand.getUsername(), loginCommand.getPassword());
+            session.setAttribute(User.class.toString(),
+                                 userJoinder.join(loginCommand.getUsername(), loginCommand.getPassword()));
         }
 
         return "redirect:/todos";
     }
 
+    // TODO : /api/logout
+
+
     // LoginController 스코프에만 유효한 방식
     // 전체 컨트롤러에 적용할때는 에러처리 클래스 생성후 @ControllerAdvice 어노테이션 추가
     @ExceptionHandler(BindException.class)
     public String handleBindException(BindException error, Model model) {
+
         model.addAttribute("bindingResult", error.getBindingResult());
         model.addAttribute("message", "사용자 이름 또는 비밀번호가 값이 올바르지 않습니다.");
 
